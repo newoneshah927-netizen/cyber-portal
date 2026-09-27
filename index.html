@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Security Department | Secure Academic Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/appwrite@25.0.0"></script>
+<style>
+  :root {
+    --navy-900: #0a0f1e; --navy-800: #0f1729; --navy-700: #141d33;
+    --accent: #4f7cff; --accent-hover: #6b8fff; --accent-light: rgba(79,124,255,0.12);
+    --emerald: #10b981; --emerald-light: rgba(16,185,129,0.12);
+    --rose: #ef4444; --rose-light: rgba(239,68,68,0.12);
+    --amber: #f59e0b; --amber-light: rgba(245,158,11,0.12);
+    --purple: #8b5cf6; --purple-light: rgba(139,92,246,0.12);
+    --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.16);
+    --text: #eef2f9; --text-muted: #8b95b8; --text-dim: #5a6488;
+    --bg-body: #0a0f1e; --bg-card: #0f1729;
+    --shadow-lg: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--navy-900); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; letter-spacing: -0.011em; }
+  .icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .icon-sm { width: 16px; height: 16px; }
+  .icon-lg { width: 24px; height: 24px; }
+  .hidden { display: none !important; }
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(10,15,30,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .brand { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .brand-mark { width: 44px; height: 44px; background: linear-gradient(135deg, var(--accent), #7c3aed); border-radius: 10px; display: grid; place-items: center; box-shadow: 0 4px 16px rgba(79,124,255,0.4); }
+  .brand-mark svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2.2; fill: none; }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+  .brand-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .brand-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+  .nav-links { display: flex; gap: 4px; align-items: center; }
+  .nav-links a { color: var(--text-muted); text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .nav-links a.nav-cta { background: var(--accent); color: #fff; padding: 10px 20px; box-shadow: 0 4px 16px rgba(79,124,255,0.35); margin-left: 8px; }
+  .hero { position: relative; padding: 100px 48px 80px; overflow: hidden; background: radial-gradient(ellipse 80% 50% at 50% 0%, var(--accent-light), transparent); }
+  .hero::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent 80%); opacity: 0.6; pointer-events: none; }
+  .hero-inner { max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; padding: 7px 16px 7px 12px; border-radius: 100px; background: var(--accent-light); border: 1px solid rgba(79,124,255,0.25); color: var(--accent-hover); font-size: 12.5px; font-weight: 500; margin-bottom: 32px; }
+  .hero-eyebrow .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); animation: livePulse 2s infinite; }
+  @keyframes livePulse { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); } 50% { box-shadow: 0 0 0 10px rgba(16,185,129,0); } }
+  .hero h1 { font-size: clamp(40px, 6vw, 76px); font-weight: 800; line-height: 1.04; letter-spacing: -0.035em; margin-bottom: 26px; }
+  .hero h1 .accent-text { background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p.lede { font-size: 18px; color: var(--text-muted); max-width: 620px; margin: 0 auto 44px; line-height: 1.65; }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 14px 26px; border-radius: 10px; border: none; font-size: 14.5px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 10px; font-family: inherit; text-decoration: none; }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 20px rgba(79,124,255,0.35); }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border-hover); }
+  .btn-secondary:hover { background: rgba(255,255,255,0.08); }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); max-width: 1000px; margin: 0 auto; padding: 48px 48px 64px; gap: 20px; }
+  .metric { padding: 24px 22px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; }
+  .metric-value { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 4px; }
+  .metric-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto 80px; padding: 0 48px; }
+  .feature { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; transition: all 0.25s; }
+  .feature:hover { transform: translateY(-3px); border-color: rgba(79,124,255,0.3); }
+  .feature-icon { width: 48px; height: 48px; background: var(--accent-light); border: 1px solid rgba(79,124,255,0.2); border-radius: 12px; display: grid; place-items: center; margin-bottom: 22px; color: var(--accent); }
+  .feature h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+  .feature p { font-size: 14px; color: var(--text-muted); line-height: 1.65; }
+  .auth-wrap { min-height: calc(100vh - 130px); display: grid; place-items: center; padding: 60px 24px; }
+  .auth-card { width: 100%; max-width: 440px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px; box-shadow: var(--shadow-lg); }
+  .auth-header { text-align: center; margin-bottom: 32px; }
+  .auth-icon { width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, var(--accent), #7c3aed); display: grid; place-items: center; margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(79,124,255,0.4); color: #fff; }
+  .auth-icon svg { width: 28px; height: 28px; }
+  .auth-header h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .auth-header p { font-size: 14px; color: var(--text-muted); }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .input-wrap { position: relative; }
+  .input-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; stroke: var(--text-dim); fill: none; stroke-width: 2; pointer-events: none; }
+  .form-group input, .form-group select { width: 100%; padding: 13px 14px 13px 44px; border-radius: 10px; border: 1px solid var(--border-hover); background: var(--bg-body); color: var(--text); font-size: 14px; font-family: inherit; transition: all 0.2s; }
+  .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
+  .submit-btn { width: 100%; padding: 13px; border: none; border-radius: 10px; background: var(--accent); color: #fff; font-size: 14.5px; font-weight: 600; cursor: pointer; margin-top: 6px; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+  .submit-btn:hover { background: var(--accent-hover); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .auth-footer { text-align: center; margin-top: 22px; font-size: 13px; color: var(--text-muted); }
+  .auth-footer a { color: var(--accent-hover); text-decoration: none; cursor: pointer; font-weight: 500; }
+  .alert { font-size: 13px; text-align: center; margin-top: 16px; padding: 11px 16px; border-radius: 10px; border: 1px solid; }
+  .alert-error { color: #fca5a5; background: var(--rose-light); border-color: rgba(239,68,68,0.3); }
+  .alert-success { color: #6ee7b7; background: var(--emerald-light); border-color: rgba(16,185,129,0.3); }
+  .alert-info { color: var(--accent-hover); background: var(--accent-light); border-color: rgba(79,124,255,0.3); }
+  .dash { max-width: 1360px; margin: 0 auto; padding: 32px 48px 80px; }
+  .dash-welcome { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .dash-welcome-left h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 6px; }
+  .dash-welcome-left p { color: var(--text-muted); font-size: 14px; }
+  .dash-welcome-right { display: flex; align-items: center; gap: 12px; }
+  .user-tag { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px 8px 8px; border-radius: 100px; }
+  .user-tag .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7c3aed); display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #fff; }
+  .user-tag .user-meta { display: flex; flex-direction: column; line-height: 1.2; }
+  .user-tag .user-name { font-size: 13.5px; font-weight: 600; }
+  .user-tag .user-role { font-size: 10.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+  .btn-ghost { padding: 9px 16px; border: 1px solid var(--border-hover); background: transparent; color: var(--text-muted); border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+  .btn-ghost:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .btn-ghost.danger { color: #fca5a5; border-color: rgba(239,68,68,0.3); }
+  .btn-ghost.danger:hover { background: var(--rose-light); }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .stat-header { display: flex; justify-content: space-between; margin-bottom: 16px; }
+  .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; color: var(--accent); background: var(--accent-light); border: 1px solid rgba(79,124,255,0.2); }
+  .stat-icon.emerald { color: var(--emerald); background: var(--emerald-light); border-color: rgba(16,185,129,0.2); }
+  .stat-icon.amber { color: var(--amber); background: var(--amber-light); border-color: rgba(245,158,11,0.2); }
+  .stat-icon.purple { color: var(--purple); background: var(--purple-light); border-color: rgba(139,92,246,0.2); }
+  .stat-value { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+  .stat-label { font-size: 12.5px; color: var(--text-dim); font-weight: 500; }
+  .tabs-row { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 28px; overflow-x: auto; }
+  .tab-btn { padding: 12px 18px; background: transparent; border: none; color: var(--text-dim); font-size: 13.5px; font-weight: 500; font-family: inherit; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab-btn:hover { color: var(--text-muted); }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+  .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+  .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+  .panel-head h3 { font-size: 16.5px; font-weight: 600; margin-bottom: 4px; }
+  .panel-head .sub { color: var(--text-muted); font-size: 13px; }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; min-width: 620px; }
+  table thead { background: rgba(10,15,30,0.6); }
+  table th, table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  table th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+  table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  table tbody tr:last-child td { border-bottom: none; }
+  .empty-row td { text-align: center !important; padding: 40px 20px !important; color: var(--text-dim) !important; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid; }
+  .badge-success { color: #6ee7b7; background: var(--emerald-light); border-color: rgba(16,185,129,0.25); }
+  .badge-danger { color: #fca5a5; background: var(--rose-light); border-color: rgba(239,68,68,0.25); }
+  .badge-warn { color: #fcd34d; background: var(--amber-light); border-color: rgba(245,158,11,0.25); }
+  .badge-info { color: var(--accent-hover); background: var(--accent-light); border-color: rgba(79,124,255,0.25); }
+  .badge-purple { color: #c4b5fd; background: var(--purple-light); border-color: rgba(139,92,246,0.25); }
+  .badge-neutral { color: var(--text-muted); background: rgba(255,255,255,0.04); border-color: var(--border-hover); }
+  .progress { height: 6px; background: rgba(10,15,30,0.8); border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent), #7c3aed); transition: width 0.6s; }
+  .progress-fill.low { background: linear-gradient(90deg, var(--rose), var(--amber)); }
+  .btn-xs { padding: 6px 12px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; border: 1px solid; }
+  .btn-xs.primary { color: var(--accent-hover); background: var(--accent-light); border-color: rgba(79,124,255,0.3); }
+  .btn-xs.primary:hover { background: var(--accent); color: #fff; }
+  .btn-xs.danger { color: #fca5a5; background: var(--rose-light); border-color: rgba(239,68,68,0.3); }
+  .btn-xs.danger:hover { background: var(--rose); color: #fff; }
+  .action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .info-banner { display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px; font-size: 13.5px; line-height: 1.55; margin-bottom: 22px; border: 1px solid; align-items: flex-start; }
+  .info-banner svg { flex-shrink: 0; margin-top: 1px; }
+  .info-banner.warn { background: var(--amber-light); border-color: rgba(245,158,11,0.25); }
+  .field-stack { display: flex; flex-direction: column; gap: 10px; }
+  .field-stack > label { font-size: 12.5px; color: var(--text-muted); font-weight: 500; }
+  .field-stack input, .field-stack select, .field-stack textarea { padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-hover); background: var(--bg-body); color: var(--text); font-size: 14px; font-family: inherit; transition: all 0.2s; }
+  .field-stack input:focus, .field-stack select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 820px) { .grid-2 { grid-template-columns: 1fr; } }
+  .code-hero { background: linear-gradient(135deg, var(--accent-light), rgba(124,58,237,0.06)); border: 1px solid rgba(79,124,255,0.2); border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 24px; }
+  .code-label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); font-weight: 600; margin-bottom: 14px; }
+  .code-display { font-family: 'JetBrains Mono', monospace; font-size: clamp(28px, 5vw, 44px); font-weight: 600; letter-spacing: 8px; color: var(--text-dim); margin-bottom: 16px; padding: 8px 0; }
+  .code-display.active { color: var(--emerald); text-shadow: 0 0 30px rgba(16,185,129,0.4); }
+  .code-meta { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: center; font-size: 12.5px; color: var(--text-muted); }
+  .countdown { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--emerald-light); border: 1px solid rgba(16,185,129,0.3); border-radius: 100px; color: #6ee7b7; font-weight: 600; font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+  .countdown.warn { background: var(--amber-light); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+  .countdown.danger { background: var(--rose-light); border-color: rgba(239,68,68,0.3); color: #fca5a5; animation: pulseCountdown 0.7s infinite; }
+  @keyframes pulseCountdown { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .code-input { font-family: 'JetBrains Mono', monospace !important; font-size: 20px !important; letter-spacing: 6px !important; text-align: center !important; text-transform: uppercase; font-weight: 600; }
+  .upload-box { border: 1.5px dashed var(--border-hover); padding: 32px 22px; border-radius: 12px; text-align: center; background: rgba(10,15,30,0.4); transition: all 0.2s; }
+  .upload-box:hover { border-color: var(--accent); background: var(--accent-light); }
+  .upload-box .upload-icon { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 10px; background: var(--accent-light); display: grid; place-items: center; color: var(--accent); }
+  .upload-box p { color: var(--text-muted); font-size: 13.5px; margin-bottom: 14px; }
+  .upload-box input[type="file"] { color: var(--text-muted); font-size: 13px; width: 100%; cursor: pointer; }
+  .toast-container { position: fixed; top: 90px; right: 24px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; max-width: 400px; }
+  .toast { background: var(--bg-card); border: 1px solid var(--border-hover); border-left: 3px solid var(--accent); padding: 16px 18px; border-radius: 12px; box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 14px; min-width: 320px; animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes toastSlideIn { from { transform: translateX(420px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .toast.success { border-left-color: var(--emerald); }
+  .toast.error { border-left-color: var(--rose); }
+  .toast.warn { border-left-color: var(--amber); }
+  .toast-icon { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; flex-shrink: 0; }
+  .toast-icon svg { width: 18px; height: 18px; }
+  .toast.success .toast-icon { background: var(--emerald-light); color: var(--emerald); }
+  .toast.error .toast-icon { background: var(--rose-light); color: var(--rose); }
+  .toast.warn .toast-icon { background: var(--amber-light); color: var(--amber); }
+  .toast.info .toast-icon { background: var(--accent-light); color: var(--accent); }
+  .toast-body { flex: 1; }
+  .toast-title { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+  .toast-msg { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(5,8,18,0.8); backdrop-filter: blur(8px); z-index: 2000; display: grid; place-items: center; padding: 20px; }
+  .modal { background: var(--bg-card); border: 1px solid var(--border-hover); border-radius: 24px; padding: 24px; max-width: 720px; width: 100%; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-hover); background: transparent; color: var(--text-muted); cursor: pointer; display: grid; place-items: center; }
+  .modal iframe { width: 100%; height: 480px; border: 1px solid var(--border); border-radius: 10px; background: #fff; }
+  .search-box { position: relative; max-width: 320px; width: 100%; }
+  .search-box input { width: 100%; padding: 11px 14px 11px 42px; border-radius: 10px; border: 1px solid var(--border-hover); background: var(--bg-body); color: var(--text); font-size: 13.5px; font-family: inherit; }
+  .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--text-dim); fill: none; stroke-width: 2; }
+  footer { border-top: 1px solid var(--border); padding: 40px 48px 28px; margin-top: 40px; text-align: center; color: var(--text-dim); font-size: 13px; }
+  @media (max-width: 900px) {
+    nav { padding: 12px 20px; }
+    .hero { padding: 60px 20px 50px; }
+    .metrics { padding: 32px 20px 48px; }
+    .features { padding: 0 20px; }
+    .dash { padding: 24px 20px 60px; }
+    .toast-container { left: 20px; right: 20px; max-width: none; }
+    .toast { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand" onclick="showPage('home')">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-title">Cyber Security Department</div>
+      <div class="brand-sub">Secure Academic Portal</div>
+    </div>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a onclick="showPage('home')">Home</a>
+    <a onclick="showPage('login')">Sign In</a>
+    <a onclick="showPage('signup')" class="nav-cta">Register</a>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="homePage">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><span class="live-dot"></span><span>Portal Active · Enrollment Open</span></div>
+      <h1>Shaping the Next Generation of <span class="accent-text">Cyber Defenders</span></h1>
+      <p class="lede">A unified academic platform powered by Appwrite cloud — attendance, materials, assignments, and more.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="showPage('login')">Sign In to Portal</button>
+        <button class="btn btn-secondary" onclick="showPage('signup')">Create Account</button>
+      </div>
+    </div>
+  </section>
+  <div class="metrics">
+    <div class="metric"><div class="metric-value">500+</div><div class="metric-label">Enrolled Students</div></div>
+    <div class="metric"><div class="metric-value">25+</div><div class="metric-label">Faculty Members</div></div>
+    <div class="metric"><div class="metric-value">40+</div><div class="metric-label">Active Courses</div></div>
+    <div class="metric"><div class="metric-value">99.9%</div><div class="metric-label">Platform Uptime</div></div>
+  </div>
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <h3>Cloud-Synced Attendance</h3>
+      <p>Real-time attendance with time-limited codes. Data securely stored in Appwrite cloud.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div>
+      <h3>Course Materials</h3>
+      <p>PDFs and notes stored securely in cloud storage with instant download.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+      <h3>Multi-Device Access</h3>
+      <p>Login from any device. Your data syncs instantly across laptop, mobile, tablet.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h3>Enterprise Security</h3>
+      <p>Appwrite Permissions ensure students see only their own data. Admin controls everything.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginPage" class="hidden">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h2>Sign in to your account</h2>
+        <p>Access your academic dashboard</p>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" id="loginEmail" placeholder="you@university.edu">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="loginPass" placeholder="Enter your password">
+        </div>
+      </div>
+      <button class="submit-btn" id="loginBtn" onclick="loginUser()">Sign In</button>
+      <div class="auth-footer">Don't have an account? <a onclick="showPage('signup')">Register</a></div>
+      <div id="loginMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupPage" class="hidden">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+        <h2>Create your account</h2>
+        <p>Register to access the portal</p>
+      </div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="suName" placeholder="Enter your full name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input type="email" id="suEmail" placeholder="you@university.edu">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Roll Number</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <input type="text" id="suRoll" placeholder="e.g. CS-2024-001">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password (min 6 characters)</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="suPass" placeholder="Minimum 6 characters">
+        </div>
+      </div>
+      <button class="submit-btn" id="signupBtn" onclick="signupUser()">Create Account</button>
+      <div class="auth-footer">Already registered? <a onclick="showPage('login')">Sign in</a></div>
+      <div id="signupMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT DASHBOARD -->
+<div id="studentDash" class="hidden">
+  <div class="dash">
+    <div class="dash-welcome">
+      <div class="dash-welcome-left">
+        <h1 id="welcomeStudent">Welcome</h1>
+        <p>Cyber Security Department · Student Portal</p>
+      </div>
+      <div class="dash-welcome-right">
+        <div class="user-tag">
+          <div class="avatar" id="studentAvatar">S</div>
+          <div class="user-meta">
+            <div class="user-name" id="studentNameChip">Student</div>
+            <div class="user-role" id="studentRollChip">Roll</div>
+          </div>
+        </div>
+        <button class="btn-ghost danger" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-header"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div></div>
+        <div class="stat-value" id="statOverall">0%</div>
+        <div class="stat-label">Overall Attendance</div>
+      </div>
+      <div class="stat">
+        <div class="stat-header"><div class="stat-icon emerald"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+        <div class="stat-value" id="statPresent">0</div>
+        <div class="stat-label">Classes Attended</div>
+      </div>
+      <div class="stat">
+        <div class="stat-header"><div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div></div>
+        <div class="stat-value" id="statSubjects">0</div>
+        <div class="stat-label">Enrolled Subjects</div>
+      </div>
+      <div class="stat">
+        <div class="stat-header"><div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
+        <div class="stat-value" id="statNotes">0</div>
+        <div class="stat-label">Materials</div>
+      </div>
+    </div>
+    <div class="tabs-row">
+      <button class="tab-btn active" data-tab="s-att" onclick="switchTab('s-att', this)">Attendance</button>
+      <button class="tab-btn" data-tab="s-mark" onclick="switchTab('s-mark', this)">Mark Attendance</button>
+      <button class="tab-btn" data-tab="s-notes" onclick="switchTab('s-notes', this)">Materials</button>
+      <button class="tab-btn" data-tab="s-subjects" onclick="switchTab('s-subjects', this)">Subjects</button>
+    </div>
+    <div id="s-att" class="panel">
+      <div class="panel-head"><div><h3>Attendance Overview</h3><div class="sub">Your subject-wise attendance</div></div></div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Subject</th><th>Total</th><th>Attended</th><th>Percentage</th><th>Status</th></tr></thead><tbody id="studentAttTable"></tbody></table>
+      </div>
+    </div>
+    <div id="s-mark" class="panel hidden">
+      <div class="panel-head"><div><h3>Mark Your Attendance</h3><div class="sub">Enter the class code shared by your instructor</div></div><div id="liveCodeStatus"></div></div>
+      <div class="info-banner warn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><div><strong>Important:</strong> Class codes only work while active. Codes auto-expire.</div></div>
+      <div class="grid-2" style="max-width:1000px;">
+        <div class="field-stack">
+          <label>Roll Number</label>
+          <input type="text" id="markRoll" readonly>
+          <label>Subject</label>
+          <select id="markSubject"></select>
+          <label>Class Attendance Code</label>
+          <input type="text" id="markAttPassword" class="code-input" placeholder="••••••••" maxlength="12" autocomplete="off">
+          <button class="submit-btn" id="markAttBtn" onclick="markSelfAttendance()">Submit Attendance</button>
+          <div id="markMsg"></div>
+        </div>
+        <div class="field-stack">
+          <div class="upload-box" style="text-align:left;padding:24px;">
+            <div class="upload-icon" style="margin-left:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <h4 style="font-size:14px;font-weight:600;margin-bottom:14px;">Current Session</h4>
+            <div style="background:var(--bg-body);padding:16px;border-radius:10px;border:1px solid var(--border);">
+              <div style="font-size:11.5px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Date</div>
+              <div id="markDate" style="font-weight:600;font-size:14px;"></div>
+              <div style="font-size:11.5px;color:var(--text-dim);margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Time</div>
+              <div id="markTime" style="font-weight:600;color:var(--emerald);font-size:14px;font-family:'JetBrains Mono',monospace;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="s-notes" class="panel hidden">
+      <div class="panel-head"><div><h3>Course Materials</h3><div class="sub">View or download study materials</div></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Subject</th><th>Title</th><th>File</th><th>Actions</th></tr></thead><tbody id="studentNotesTable"></tbody></table></div>
+    </div>
+    <div id="s-subjects" class="panel hidden">
+      <div class="panel-head"><div><h3>Enrolled Subjects</h3><div class="sub">Courses registered</div></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Code</th><th>Subject Name</th><th>Faculty</th></tr></thead><tbody id="studentSubjectsTable"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="adminDash" class="hidden">
+  <div class="dash">
+    <div class="dash-welcome">
+      <div class="dash-welcome-left">
+        <h1>Administrator Console</h1>
+        <p>Manage students, attendance, and materials</p>
+      </div>
+      <div class="dash-welcome-right">
+        <div class="user-tag">
+          <div class="avatar" style="background:linear-gradient(135deg,#7c3aed,#d4af37);">A</div>
+          <div class="user-meta">
+            <div class="user-name" id="adminNameChip">Admin</div>
+            <div class="user-role">Administrator</div>
+          </div>
+        </div>
+        <button class="btn-ghost danger" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-header"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div><div class="stat-value" id="adminStatStudents">0</div><div class="stat-label">Students</div></div>
+      <div class="stat"><div class="stat-header"><div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div></div><div class="stat-value" id="adminStatSubjects">0</div><div class="stat-label">Subjects</div></div>
+      <div class="stat"><div class="stat-header"><div class="stat-icon emerald"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div></div><div class="stat-value" id="adminStatNotes">0</div><div class="stat-label">Materials</div></div>
+      <div class="stat"><div class="stat-header"><div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/></svg></div></div><div class="stat-value" id="adminStatRecords">0</div><div class="stat-label">Attendance Records</div></div>
+    </div>
+    <div class="tabs-row">
+      <button class="tab-btn active" data-tab="a-code" onclick="switchTab('a-code', this)">Class Code</button>
+      <button class="tab-btn" data-tab="a-students" onclick="switchTab('a-students', this)">Students</button>
+      <button class="tab-btn" data-tab="a-att" onclick="switchTab('a-att', this)">Attendance</button>
+      <button class="tab-btn" data-tab="a-notes" onclick="switchTab('a-notes', this)">Materials</button>
+      <button class="tab-btn" data-tab="a-subjects" onclick="switchTab('a-subjects', this)">Subjects</button>
+    </div>
+    <div id="a-code" class="panel">
+      <div class="panel-head"><div><h3>Attendance Session Control</h3><div class="sub">Generate a time-limited code for students</div></div></div>
+      <div class="code-hero">
+        <div class="code-label">Current Session Code</div>
+        <div class="code-display" id="currentAttPassword">— — — — — —</div>
+        <div class="code-meta" id="codeMeta"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field-stack">
+          <label>Set New Code (4-12 characters)</label>
+          <input type="text" id="newAttPassword" class="code-input" placeholder="ENTER CODE" maxlength="12">
+          <label>Subject</label>
+          <select id="codeSubject"></select>
+          <label>Validity Duration</label>
+          <select id="codeDuration">
+            <option value="5">5 minutes</option>
+            <option value="10" selected>10 minutes (recommended)</option>
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+          </select>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="submit-btn" style="flex:1;margin-top:0;" id="activateCodeBtn" onclick="setAttendancePassword()">Activate Code</button>
+            <button class="btn-ghost" onclick="generateRandomPassword()">Generate</button>
+          </div>
+          <div id="passMsg"></div>
+        </div>
+        <div class="field-stack">
+          <div class="upload-box" style="text-align:left;padding:24px;">
+            <h4 style="font-size:14px;font-weight:600;margin-bottom:14px;">Instructions</h4>
+            <ol style="color:var(--text-muted);font-size:13px;line-height:1.85;padding-left:20px;">
+              <li>Select subject and duration</li>
+              <li>Generate or enter a code and activate</li>
+              <li>Share code verbally with students in class</li>
+              <li>Code auto-expires after selected duration</li>
+            </ol>
+            <button class="btn-ghost danger" style="width:100%;justify-content:center;margin-top:18px;" onclick="clearAttendancePassword()">End Session</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="a-students" class="panel hidden">
+      <div class="panel-head">
+        <div><h3>Registered Students</h3><div class="sub">Manage student accounts</div></div>
+        <div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="studentSearch" placeholder="Search students..." oninput="filterStudents()"></div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Roll Number</th><th>Role</th><th>Actions</th></tr></thead><tbody id="adminStudentsTable"></tbody></table></div>
+    </div>
+    <div id="a-att" class="panel hidden">
+      <div class="panel-head"><div><h3>Attendance Management</h3><div class="sub">Manually record or override attendance</div></div></div>
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="field-stack">
+          <label>Subject</label>
+          <select id="attSubjectSelect"></select>
+          <label>Student</label>
+          <select id="attStudentSelect"></select>
+          <label>Status</label>
+          <select id="attStatusSelect"><option value="present">Present</option><option value="absent">Absent</option></select>
+          <button class="submit-btn" onclick="markAttendance()">Save Record</button>
+          <div id="attMsg"></div>
+        </div>
+        <div class="field-stack">
+          <div class="upload-box" style="text-align:left;padding:24px;"><h4 style="font-size:14px;font-weight:600;margin-bottom:14px;">Statistics</h4><div id="attQuickStats" style="font-size:13px;color:var(--text-muted);line-height:2;"></div></div>
+        </div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Student</th><th>Subject</th><th>Total</th><th>Present</th><th>Percentage</th></tr></thead><tbody id="adminAttTable"></tbody></table></div>
+    </div>
+    <div id="a-notes" class="panel hidden">
+      <div class="panel-head"><div><h3>Upload Course Materials</h3><div class="sub">Share files with students</div></div></div>
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="field-stack">
+          <label>Subject</label>
+          <select id="noteSubject"></select>
+          <label>Title</label>
+          <input type="text" id="noteTitle" placeholder="e.g. Chapter 3 - Cryptography">
+        </div>
+        <div class="field-stack">
+          <label>File</label>
+          <div class="upload-box">
+            <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <p>PDF, DOC, PPT (max 5MB)</p>
+            <input type="file" id="noteFile" accept=".pdf,.doc,.docx,.ppt,.pptx">
+          </div>
+          <button class="submit-btn" id="uploadNoteBtn" onclick="uploadNote()">Upload</button>
+          <div id="noteMsg"></div>
+        </div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Subject</th><th>Title</th><th>File</th><th>Actions</th></tr></thead><tbody id="adminNotesTable"></tbody></table></div>
+    </div>
+    <div id="a-subjects" class="panel hidden">
+      <div class="panel-head"><div><h3>Subject Management</h3><div class="sub">Add or remove subjects</div></div></div>
+      <div class="grid-2">
+        <div class="field-stack">
+          <label>Subject Code</label>
+          <input type="text" id="subCode" placeholder="e.g. CS105">
+          <label>Subject Name</label>
+          <input type="text" id="subName" placeholder="Full subject name">
+          <label>Faculty</label>
+          <input type="text" id="subFaculty" placeholder="Faculty name">
+          <button class="submit-btn" onclick="addSubject()">Add Subject</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Faculty</th><th>Action</th></tr></thead><tbody id="adminSubjectsTable"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pdfModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 id="modalTitle">Document Viewer</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<footer>© 2024 Cyber Security Department · Powered by Appwrite</footer>
+
+<!-- ============ JAVASCRIPT ============ -->
+<script>
+/* ===================================================
+   APPWRITE CONFIGURATION
+   =================================================== */
+const APPWRITE_ENDPOINT = 'https://sgp.cloud.appwrite.io/v1';
+const APPWRITE_PROJECT_ID = '68abfae60011d9c05b89';
+const DB_ID = 'cyber_db'; // Apna Database ID yahan dalein
+
+// Collection IDs (Appwrite Console mein jo banayenge)
+const COL_STUDENTS = 'students';
+const COL_SUBJECTS = 'subjects';
+const COL_ATTENDANCE = 'attendance';
+const COL_CODES = 'attendance_codes';
+const COL_NOTES = 'notes';
+const BUCKET_ID = 'notes-files';
+
+const client = new Appwrite.Client()
+    .setEndpoint(APPWRITE_ENDPOINT)
+    .setProject(APPWRITE_PROJECT_ID);
+
+const account = new Appwrite.Account(client);
+const databases = new Appwrite.Databases(client);
+const storage = new Appwrite.Storage(client);
+
+let currentUser = null;
+let currentProfile = null;
+
+/* ================= ICONS ================= */
+const ICONS = {
+  success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+};
+
+/* ================= UTILITIES ================= */
+function toast(msg, type = 'success') {
+  const titles = { success: 'Success', error: 'Error', warn: 'Warning', info: 'Information' };
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = `<div class="toast-icon">${ICONS[type] || ICONS.info}</div><div class="toast-body"><div class="toast-title">${titles[type]}</div><div class="toast-msg">${msg}</div></div>`;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+function showPage(page) {
+  ['homePage','loginPage','signupPage','studentDash','adminDash'].forEach(p => {
+    const el = document.getElementById(p);
+    if (el) el.classList.add('hidden');
+  });
+  const map = { home:'homePage', login:'loginPage', signup:'signupPage' };
+  if (map[page]) document.getElementById(map[page]).classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function switchTab(id, el) {
+  const parent = el.parentElement.parentElement;
+  parent.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  parent.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function formatTimeRemaining(ms) {
+  if (ms < 0) ms = 0;
+  const s = Math.floor(ms/1000);
+  return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+}
+
+/* ================= AUTH ================= */
+async function signupUser() {
+  const name = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const roll = document.getElementById('suRoll').value.trim();
+  const pass = document.getElementById('suPass').value.trim();
+  const msg = document.getElementById('signupMsg');
+  const btn = document.getElementById('signupBtn');
+
+  if (!name || !email || !roll || !pass) return msg.innerHTML = '<div class="alert alert-error">Please fill all fields</div>';
+  if (pass.length < 6) return msg.innerHTML = '<div class="alert alert-error">Password must be 6+ characters</div>';
+
+  btn.disabled = true; btn.textContent = 'Creating...';
+
+  try {
+    const user = await account.create(Appwrite.ID.unique(), email, pass, name);
+    await account.createEmailPasswordSession(email, pass);
+    currentUser = await account.get();
+
+    try {
+      await databases.createDocument(DB_ID, COL_STUDENTS, Appwrite.ID.unique(), {
+        full_name: name,
+        email: email,
+        roll_number: roll,
+        role: 'student'
+      });
+    } catch (e) {
+      console.warn('Profile create skipped:', e.message);
+    }
+
+    msg.innerHTML = '<div class="alert alert-success">Account created! Signing in...</div>';
+    setTimeout(() => loadProfileAndRoute(), 800);
+  } catch (err) {
+    msg.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+async function loginUser() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const msg = document.getElementById('loginMsg');
+  const btn = document.getElementById('loginBtn');
+
+  if (!email || !pass) return msg.innerHTML = '<div class="alert alert-error">Enter email and password</div>';
+
+  btn.disabled = true; btn.textContent = 'Signing in...';
+
+  try {
+    await account.createEmailPasswordSession(email, pass);
+    currentUser = await account.get();
+    await loadProfileAndRoute();
+    btn.disabled = false; btn.textContent = 'Sign In';
+  } catch (err) {
+    msg.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function loadProfileAndRoute() {
+  try {
+    const res = await databases.listDocuments(DB_ID, COL_STUDENTS, [
+      Appwrite.Query.equal('email', currentUser.email)
+    ]);
+
+    if (!res.documents || res.documents.length === 0) {
+      toast('Profile not found. Contact admin.', 'error');
+      await account.deleteSession('current');
+      return;
+    }
+
+    currentProfile = res.documents[0];
+    currentProfile.id = currentProfile.$id;
+
+    if (currentProfile.role === 'admin') {
+      document.getElementById('adminDash').classList.remove('hidden');
+      document.getElementById('adminNameChip').textContent = currentProfile.full_name;
+      await loadAdminPanel();
+    } else {
+      document.getElementById('studentDash').classList.remove('hidden');
+      await loadStudentPanel();
+    }
+  } catch (err) {
+    toast('Error loading profile: ' + err.message, 'error');
+  }
+}
+
+async function logout() {
+  try { await account.deleteSession('current'); } catch(e) {}
+  currentUser = null; currentProfile = null;
+  toast('Signed out', 'success');
+  showPage('home');
+}
+
+/* ================= STUDENT PANEL ================= */
+async function loadStudentPanel() {
+  document.getElementById('welcomeStudent').textContent = 'Welcome back, ' + currentProfile.full_name.split(' ')[0];
+  document.getElementById('studentNameChip').textContent = currentProfile.full_name;
+  document.getElementById('studentRollChip').textContent = currentProfile.roll_number;
+  document.getElementById('studentAvatar').textContent = currentProfile.full_name.charAt(0).toUpperCase();
+  document.getElementById('markRoll').value = currentProfile.roll_number;
+
+  const [subjRes, attRes, notesRes] = await Promise.all([
+    databases.listDocuments(DB_ID, COL_SUBJECTS),
+    databases.listDocuments(DB_ID, COL_ATTENDANCE, [Appwrite.Query.equal('student_id', currentUser.$id)]),
+    databases.listDocuments(DB_ID, COL_NOTES)
+  ]);
+
+  const subjects = subjRes.documents || [];
+  const att = attRes.documents || [];
+  const notes = notesRes.documents || [];
+
+  let total = 0, present = 0;
+  att.forEach(a => { total += a.total_classes; present += a.present_count; });
+  const overall = total ? Math.round((present/total)*100) : 0;
+
+  document.getElementById('statOverall').textContent = overall + '%';
+  document.getElementById('statPresent').textContent = present;
+  document.getElementById('statSubjects').textContent = subjects.length;
+  document.getElementById('statNotes').textContent = notes.length;
+
+  let attHTML = '';
+  subjects.forEach(s => {
+    const rec = att.find(a => a.subject_code === s.code) || { total_classes: 0, present_count: 0 };
+    const pct = rec.total_classes ? Math.round((rec.present_count/rec.total_classes)*100) : 0;
+    const badge = rec.total_classes === 0 ? '<span class="badge badge-neutral">No Data</span>'
+      : pct >= 75 ? '<span class="badge badge-success">Good</span>'
+      : pct >= 50 ? '<span class="badge badge-warn">Average</span>'
+      : '<span class="badge badge-danger">Low</span>';
+    attHTML += `<tr>
+      <td><strong>${s.name}</strong><div style="font-size:11.5px;color:var(--text-dim);margin-top:3px;">${s.code}</div></td>
+      <td>${rec.total_classes}</td><td>${rec.present_count}</td>
+      <td><div style="display:flex;align-items:center;gap:10px;">
+        <span style="min-width:44px;font-weight:600;">${pct}%</span>
+        <div class="progress" style="flex:1;max-width:120px;"><div class="progress-fill ${pct<50?'low':''}" style="width:${pct}%"></div></div>
+      </div></td>
+      <td>${badge}</td>
+    </tr>`;
+  });
+  document.getElementById('studentAttTable').innerHTML = attHTML || '<tr class="empty-row"><td colspan="5">No attendance records</td></tr>';
+
+  document.getElementById('markSubject').innerHTML = subjects.map(s => `<option value="${s.code}">${s.code} — ${s.name}</option>`).join('');
+
+  document.getElementById('studentSubjectsTable').innerHTML = subjects.map(s => 
+    `<tr><td><span class="badge badge-info">${s.code}</span></td><td>${s.name}</td><td>${s.faculty}</td></tr>`
+  ).join('') || '<tr class="empty-row"><td colspan="3">No subjects</td></tr>';
+
+  document.getElementById('studentNotesTable').innerHTML = notes.map(n => `
+    <tr>
+      <td><span class="badge badge-info">${n.subject_code}</span></td>
+      <td>${n.title}</td>
+      <td style="color:var(--text-muted);font-size:12.5px;">${n.file_name || 'N/A'}</td>
+      <td><div class="action-group">
+        <button class="btn-xs primary" onclick="viewNote('${n.file_url}', '${n.file_name}')">View</button>
+        <button class="btn-xs primary" onclick="downloadNote('${n.file_url}', '${n.file_name}')">Download</button>
+      </div></td>
+    </tr>`).join('') || '<tr class="empty-row"><td colspan="4">No materials</td></tr>';
+
+  updateLiveTime();
+  await updateStudentCodeStatus();
+}
+
+async function updateStudentCodeStatus() {
+  const el = document.getElementById('liveCodeStatus');
+  if (!el) return;
+  try {
+    const now = new Date().toISOString();
+    const res = await databases.listDocuments(DB_ID, COL_CODES, [
+      Appwrite.Query.equal('is_active', true),
+      Appwrite.Query.greaterThan('expires_at', now),
+      Appwrite.Query.limit(1)
+    ]);
+    if (res.documents && res.documents.length > 0) {
+      const remaining = new Date(res.documents[0].expires_at) - new Date();
+      el.innerHTML = `<span class="badge badge-success" style="padding:6px 12px;">Session Active · ${formatTimeRemaining(remaining)}</span>`;
+    } else {
+      el.innerHTML = '<span class="badge badge-neutral" style="padding:6px 12px;">No Active Session</span>';
+    }
+  } catch (e) {
+    el.innerHTML = '<span class="badge badge-neutral" style="padding:6px 12px;">No Active Session</span>';
+  }
+}
+
+function updateLiveTime() {
+  const d = new Date();
+  const dEl = document.getElementById('markDate');
+  const tEl = document.getElementById('markTime');
+  if (dEl) dEl.textContent = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  if (tEl) tEl.textContent = d.toLocaleTimeString('en-US', { hour12: true });
+}
+
+/* ================= MARK ATTENDANCE ================= */
+async function markSelfAttendance() {
+  const subCode = document.getElementById('markSubject').value;
+  const enteredCode = document.getElementById('markAttPassword').value.trim().toUpperCase();
+  const msg = document.getElementById('markMsg');
+
+  if (!subCode) return msg.innerHTML = '<div class="alert alert-error">Select a subject</div>';
+  if (!enteredCode) return msg.innerHTML = '<div class="alert alert-error">Enter the class code</div>';
+
+  try {
+    const now = new Date().toISOString();
+    const codes = await databases.listDocuments(DB_ID, COL_CODES, [
+      Appwrite.Query.equal('is_active', true),
+      Appwrite.Query.equal('subject_code', subCode),
+      Appwrite.Query.greaterThan('expires_at', now),
+      Appwrite.Query.limit(1)
+    ]);
+
+    if (!codes.documents || codes.documents.length === 0) {
+      return msg.innerHTML = '<div class="alert alert-error">No active session for this subject.</div>';
+    }
+
+    const activeCode = codes.documents[0];
+    if (activeCode.code.toUpperCase() !== enteredCode) {
+      return msg.innerHTML = '<div class="alert alert-error">Invalid class code.</div>';
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const existingRes = await databases.listDocuments(DB_ID, COL_ATTENDANCE, [
+      Appwrite.Query.equal('student_id', currentUser.$id),
+      Appwrite.Query.equal('subject_code', subCode),
+      Appwrite.Query.limit(1)
+    ]);
+
+    if (existingRes.documents && existingRes.documents.length > 0) {
+      const existing = existingRes.documents[0];
+      if (existing.last_marked === today) {
+        return msg.innerHTML = '<div class="alert alert-error">Already marked today.</div>';
+      }
+      await databases.updateDocument(DB_ID, COL_ATTENDANCE, existing.$id, {
+        total_classes: existing.total_classes + 1,
+        present_count: existing.present_count + 1,
+        last_marked: today
+      });
+    } else {
+      await databases.createDocument(DB_ID, COL_ATTENDANCE, Appwrite.ID.unique(), {
+        student_id: currentUser.$id,
+        subject_code: subCode,
+        total_classes: 1,
+        present_count: 1,
+        last_marked: today
+      });
+    }
+
+    msg.innerHTML = '<div class="alert alert-success">Attendance recorded!</div>';
+    toast('Attendance marked for ' + subCode, 'success');
+    document.getElementById('markAttPassword').value = '';
+    await loadStudentPanel();
+  } catch (err) {
+    msg.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+  }
+}
+
+/* ================= NOTES ================= */
+async function viewNote(url, name) {
+  if (!url) return toast('File not available', 'error');
+  document.getElementById('modalTitle').textContent = name || 'Document';
+  const content = document.getElementById('modalContent');
+  if (url.match(/\.(jpg|jpeg|png|gif)$/i)) {
+    content.innerHTML = `<img src="${url}" style="width:100%;border-radius:10px;">`;
+  } else {
+    content.innerHTML = `<iframe src="${url}"></iframe>`;
+  }
+  document.getElementById('pdfModal').classList.remove('hidden');
+}
+
+function downloadNote(url, name) {
+  if (!url) return toast('File not available', 'error');
+  const a = document.createElement('a');
+  a.href = url; a.download = name || 'file';
+  a.target = '_blank'; a.click();
+  toast('Download started', 'info');
+}
+
+function closeModal() {
+  document.getElementById('pdfModal').classList.add('hidden');
+  document.getElementById('modalContent').innerHTML = '';
+}
+
+/* ================= ADMIN PANEL ================= */
+async function loadAdminPanel() {
+  await Promise.all([
+    loadAdminStudents(),
+    loadAdminSubjects(),
+    loadAdminDropdowns(),
+    loadAdminAttendance(),
+    loadAdminNotes(),
+    loadActiveCode()
+  ]);
+  await loadAdminStats();
+}
+
+async function loadAdminStats() {
+  try {
+    const [u, s, n, a] = await Promise.all([
+      databases.listDocuments(DB_ID, COL_STUDENTS, [Appwrite.Query.equal('role', 'student')]),
+      databases.listDocuments(DB_ID, COL_SUBJECTS),
+      databases.listDocuments(DB_ID, COL_NOTES),
+      databases.listDocuments(DB_ID, COL_ATTENDANCE)
+    ]);
+    document.getElementById('adminStatStudents').textContent = u.total || 0;
+    document.getElementById('adminStatSubjects').textContent = s.total || 0;
+    document.getElementById('adminStatNotes').textContent = n.total || 0;
+    document.getElementById('adminStatRecords').textContent = a.total || 0;
+  } catch (e) { console.warn(e); }
+}
+
+async function loadAdminStudents() {
+  const res = await databases.listDocuments(DB_ID, COL_STUDENTS, [Appwrite.Query.orderDesc('$createdAt')]);
+  document.getElementById('adminStudentsTable').innerHTML = (res.documents || []).map(u => `
+    <tr>
+      <td><strong>${u.full_name}</strong></td>
+      <td>${u.email}</td>
+      <td>${u.roll_number}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-purple':'badge-info'}">${u.role}</span></td>
+      <td><div class="action-group">
+        ${u.$id !== currentUser.$id ? `<button class="btn-xs danger" onclick="deleteUser('${u.$id}')">Delete</button>` : '<span style="color:var(--text-dim);font-size:12px;">You</span>'}
+      </div></td>
+    </tr>`).join('') || '<tr class="empty-row"><td colspan="5">No students</td></tr>';
+}
+
+function filterStudents() {
+  const q = document.getElementById('studentSearch').value.toLowerCase();
+  document.querySelectorAll('#adminStudentsTable tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+async function deleteUser(id) {
+  if (!confirm('Delete this user permanently?')) return;
+  try {
+    await databases.deleteDocument(DB_ID, COL_STUDENTS, id);
+    toast('User deleted', 'warn');
+    await loadAdminStudents();
+    await loadAdminStats();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function loadAdminSubjects() {
+  const res = await databases.listDocuments(DB_ID, COL_SUBJECTS);
+  document.getElementById('adminSubjectsTable').innerHTML = (res.documents || []).map(s => `
+    <tr>
+      <td><span class="badge badge-info">${s.code}</span></td>
+      <td>${s.name}</td>
+      <td>${s.faculty}</td>
+      <td><button class="btn-xs danger" onclick="deleteSubject('${s.$id}')">Delete</button></td>
+    </tr>`).join('') || '<tr class="empty-row"><td colspan="4">No subjects</td></tr>';
+}
+
+async function addSubject() {
+  const code = document.getElementById('subCode').value.trim().toUpperCase();
+  const name = document.getElementById('subName').value.trim();
+  const faculty = document.getElementById('subFaculty').value.trim();
+  if (!code || !name || !faculty) return toast('Fill all fields', 'error');
+  try {
+    await databases.createDocument(DB_ID, COL_SUBJECTS, Appwrite.ID.unique(), { code, name, faculty });
+    document.getElementById('subCode').value = '';
+    document.getElementById('subName').value = '';
+    document.getElementById('subFaculty').value = '';
+    toast('Subject added', 'success');
+    await loadAdminSubjects();
+    await loadAdminDropdowns();
+    await loadAdminStats();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function deleteSubject(id) {
+  if (!confirm('Delete subject?')) return;
+  try {
+    await databases.deleteDocument(DB_ID, COL_SUBJECTS, id);
+    toast('Subject deleted', 'warn');
+    await loadAdminSubjects();
+    await loadAdminDropdowns();
+    await loadAdminStats();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function loadAdminDropdowns() {
+  const [subjRes, studRes] = await Promise.all([
+    databases.listDocuments(DB_ID, COL_SUBJECTS),
+    databases.listDocuments(DB_ID, COL_STUDENTS, [Appwrite.Query.equal('role', 'student')])
+  ]);
+  const subjOpts = (subjRes.documents || []).map(s => `<option value="${s.code}">${s.code} — ${s.name}</option>`).join('');
+  const studOpts = (studRes.documents || []).map(s => `<option value="${s.$id}">${s.full_name} (${s.roll_number})</option>`).join('');
+
+  document.getElementById('attSubjectSelect').innerHTML = subjOpts || '<option>No subjects</option>';
+  document.getElementById('attStudentSelect').innerHTML = studOpts || '<option>No students</option>';
+  document.getElementById('noteSubject').innerHTML = subjOpts || '<option>No subjects</option>';
+  document.getElementById('codeSubject').innerHTML = subjOpts || '<option>No subjects</option>';
+}
+
+async function loadAdminAttendance() {
+  const [attRes, usersRes] = await Promise.all([
+    databases.listDocuments(DB_ID, COL_ATTENDANCE),
+    databases.listDocuments(DB_ID, COL_STUDENTS)
+  ]);
+  const users = usersRes.documents || [];
+  const att = attRes.documents || [];
+
+  let html = '';
+  att.forEach(a => {
+    const u = users.find(x => x.$id === a.student_id);
+    if (!u) return;
+    const pct = a.total_classes ? Math.round((a.present_count/a.total_classes)*100) : 0;
+    html += `<tr>
+      <td><strong>${u.full_name}</strong><div style="font-size:11.5px;color:var(--text-dim);">${u.roll_number}</div></td>
+      <td><span class="badge badge-info">${a.subject_code}</span></td>
+      <td>${a.total_classes}</td><td>${a.present_count}</td>
+      <td><span style="font-weight:600;color:${pct<50?'var(--rose)':'var(--emerald)'};">${pct}%</span></td>
+    </tr>`;
+  });
+  document.getElementById('adminAttTable').innerHTML = html || '<tr class="empty-row"><td colspan="5">No records</td></tr>';
+
+  const tp = att.reduce((s,a)=>s+a.present_count,0);
+  const tc = att.reduce((s,a)=>s+a.total_classes,0);
+  const overall = tc ? Math.round((tp/tc)*100) : 0;
+  document.getElementById('attQuickStats').innerHTML = `
+    <div>Total Records: <strong>${att.length}</strong></div>
+    <div>Total Present: <strong>${tp}</strong></div>
+    <div>Overall: <strong>${overall}%</strong></div>
+  `;
+}
+
+async function markAttendance() {
+  const subject_code = document.getElementById('attSubjectSelect').value;
+  const student_id = document.getElementById('attStudentSelect').value;
+  const status = document.getElementById('attStatusSelect').value;
+  if (!subject_code || !student_id) return toast('Select subject and student', 'error');
+
+  try {
+    const exRes = await databases.listDocuments(DB_ID, COL_ATTENDANCE, [
+      Appwrite.Query.equal('student_id', student_id),
+      Appwrite.Query.equal('subject_code', subject_code),
+      Appwrite.Query.limit(1)
+    ]);
+    const today = new Date().toISOString().split('T')[0];
+
+    if (exRes.documents && exRes.documents.length > 0) {
+      const existing = exRes.documents[0];
+      await databases.updateDocument(DB_ID, COL_ATTENDANCE, existing.$id, {
+        total_classes: existing.total_classes + 1,
+        present_count: existing.present_count + (status === 'present' ? 1 : 0),
+        last_marked: today
+      });
+    } else {
+      await databases.createDocument(DB_ID, COL_ATTENDANCE, Appwrite.ID.unique(), {
+        student_id, subject_code,
+        total_classes: 1,
+        present_count: status === 'present' ? 1 : 0,
+        last_marked: today
+      });
+    }
+    toast('Attendance saved', 'success');
+    document.getElementById('attMsg').innerHTML = '<div class="alert alert-success">Saved!</div>';
+    setTimeout(() => document.getElementById('attMsg').innerHTML = '', 2000);
+    await loadAdminAttendance();
+    await loadAdminStats();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+/* ================= CLASS CODE ================= */
+async function loadActiveCode() {
+  const display = document.getElementById('currentAttPassword');
+  const meta = document.getElementById('codeMeta');
+
+  try {
+    const now = new Date().toISOString();
+    const res = await databases.listDocuments(DB_ID, COL_CODES, [
+      Appwrite.Query.equal('is_active', true),
+      Appwrite.Query.greaterThan('expires_at', now),
+      Appwrite.Query.orderDesc('$createdAt'),
+      Appwrite.Query.limit(1)
+    ]);
+
+    if (res.documents && res.documents.length > 0) {
+      const c = res.documents[0];
+      display.textContent = c.code;
+      display.classList.add('active');
+      const remaining = new Date(c.expires_at) - new Date();
+      const cdClass = remaining < 60000 ? 'danger' : remaining < 180000 ? 'warn' : '';
+      meta.innerHTML = `
+        <span class="badge badge-success">Active</span>
+        <span class="countdown ${cdClass}">${ICONS.clock.replace('<svg','<svg style="width:14px;height:14px;"')} ${formatTimeRemaining(remaining)}</span>
+        <span style="color:var(--text-muted);font-size:12px;">Subject: ${c.subject_code}</span>
+      `;
+    } else {
+      display.textContent = '— — — — — —';
+      display.classList.remove('active');
+      meta.innerHTML = '<span class="badge badge-neutral">Inactive</span><span style="color:var(--text-muted);font-size:12px;">No active session</span>';
+    }
+  } catch (e) {
+    display.textContent = '— — — — — —';
+    display.classList.remove('active');
+    meta.innerHTML = '<span class="badge badge-neutral">Inactive</span>';
+  }
+}
+
+async function setAttendancePassword() {
+  const code = document.getElementById('newAttPassword').value.trim().toUpperCase();
+  const subject_code = document.getElementById('codeSubject').value;
+  const duration = parseInt(document.getElementById('codeDuration').value);
+  const msg = document.getElementById('passMsg');
+
+  if (!code || code.length < 4) return msg.innerHTML = '<div class="alert alert-error">Code must be 4+ chars</div>';
+  if (!subject_code) return msg.innerHTML = '<div class="alert alert-error">Select subject</div>';
+
+  try {
+    // Deactivate existing
+    const existing = await databases.listDocuments(DB_ID, COL_CODES, [Appwrite.Query.equal('is_active', true)]);
+    for (const doc of existing.documents) {
+      await databases.updateDocument(DB_ID, COL_CODES, doc.$id, { is_active: false });
+    }
+
+    const expiresAt = new Date(Date.now() + duration * 60 * 1000).toISOString();
+    await databases.createDocument(DB_ID, COL_CODES, Appwrite.ID.unique(), {
+      code, subject_code,
+      expires_at: expiresAt,
+      is_active: true,
+      created_by: currentUser.$id
+    });
+
+    msg.innerHTML = '<div class="alert alert-success">Session activated!</div>';
+    toast('Code ' + code + ' active for ' + duration + ' min', 'success');
+    document.getElementById('newAttPassword').value = '';
+    setTimeout(() => msg.innerHTML = '', 2500);
+    await loadActiveCode();
+  } catch (e) {
+    msg.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+  }
+}
+
+function generateRandomPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+  document.getElementById('newAttPassword').value = code;
+}
+
+async function clearAttendancePassword() {
+  if (!confirm('End the current session?')) return;
+  try {
+    const existing = await databases.listDocuments(DB_ID, COL_CODES, [Appwrite.Query.equal('is_active', true)]);
+    for (const doc of existing.documents) {
+      await databases.updateDocument(DB_ID, COL_CODES, doc.$id, { is_active: false });
+    }
+    toast('Session ended', 'warn');
+    await loadActiveCode();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+/* ================= NOTES ================= */
+async function uploadNote() {
+  const subject_code = document.getElementById('noteSubject').value;
+  const title = document.getElementById('noteTitle').value.trim();
+  const fileInput = document.getElementById('noteFile');
+  const msg = document.getElementById('noteMsg');
+  const btn = document.getElementById('uploadNoteBtn');
+
+  if (!subject_code || !title) return msg.innerHTML = '<div class="alert alert-error">Fill subject and title</div>';
+  const file = fileInput.files[0];
+  if (!file) return msg.innerHTML = '<div class="alert alert-error">Select a file</div>';
+  if (file.size > 5 * 1024 * 1024) return msg.innerHTML = '<div class="alert alert-error">Max 5MB</div>';
+
+  btn.disabled = true; btn.textContent = 'Uploading...';
+
+  try {
+    const fileId = Appwrite.ID.unique();
+    await storage.createFile(BUCKET_ID, fileId, file);
+    const fileUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=${APPWRITE_PROJECT_ID}`;
+
+    await databases.createDocument(DB_ID, COL_NOTES, Appwrite.ID.unique(), {
+      subject_code, title,
+      file_url: fileUrl,
+      file_name: file.name,
+      uploaded_by: currentUser.$id
+    });
+
+    msg.innerHTML = '<div class="alert alert-success">Uploaded!</div>';
+    toast('Material uploaded', 'success');
+    document.getElementById('noteTitle').value = '';
+    fileInput.value = '';
+    btn.disabled = false; btn.textContent = 'Upload';
+    await loadAdminNotes();
+    await loadAdminStats();
+  } catch (e) {
+    msg.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+    btn.disabled = false; btn.textContent = 'Upload';
+  }
+}
+
+async function loadAdminNotes() {
+  const res = await databases.listDocuments(DB_ID, COL_NOTES, [Appwrite.Query.orderDesc('$createdAt')]);
+  document.getElementById('adminNotesTable').innerHTML = (res.documents || []).map(n => `
+    <tr>
+      <td><span class="badge badge-info">${n.subject_code}</span></td>
+      <td>${n.title}</td>
+      <td style="font-size:12.5px;color:var(--text-muted);">${n.file_name}</td>
+      <td><div class="action-group">
+        <button class="btn-xs primary" onclick="viewNote('${n.file_url}', '${n.file_name}')">View</button>
+        <button class="btn-xs danger" onclick="deleteNote('${n.$id}', '${n.file_url}')">Delete</button>
+      </div></td>
+    </tr>`).join('') || '<tr class="empty-row"><td colspan="4">No materials</td></tr>';
+}
+
+async function deleteNote(id, url) {
+  if (!confirm('Delete this material?')) return;
+  try {
+    // Try to extract file id from URL
+    const match = url.match(/files\/([^\/]+)\/view/);
+    if (match && match[1]) {
+      try { await storage.deleteFile(BUCKET_ID, match[1]); } catch(e) {}
+    }
+    await databases.deleteDocument(DB_ID, COL_NOTES, id);
+    toast('Deleted', 'warn');
+    await loadAdminNotes();
+    await loadAdminStats();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+/* ================= LIVE UPDATES ================= */
+setInterval(() => {
+  if (document.getElementById('markTime')) updateLiveTime();
+}, 1000);
+
+setInterval(async () => {
+  if (currentProfile && currentProfile.role === 'admin' && !document.getElementById('adminDash').classList.contains('hidden')) {
+    await loadActiveCode();
+  }
+  if (currentProfile && currentProfile.role === 'student' && !document.getElementById('studentDash').classList.contains('hidden')) {
+    await updateStudentCodeStatus();
+  }
+}, 10000);
+
+/* ================= INIT ================= */
+async function init() {
+  try {
+    currentUser = await account.get();
+    await loadProfileAndRoute();
+  } catch (err) {
+    showPage('home');
+  }
+}
+
+window.addEventListener('load', init);
+</script>
+
+</body>
+</html>
